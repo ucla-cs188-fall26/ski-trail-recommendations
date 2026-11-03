@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mammoth Mountain · Terrain explorer</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="map.css">
+  <script defer src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+  <script defer src="map.js"></script>
+</head>
+<body>
+  <main id="map" aria-label="Interactive Mammoth Mountain trail map"></main>
+  <header class="card title-card">
+    <p class="eyebrow">SIERRA NEVADA · CALIFORNIA</p>
+    <h1>Mammoth Mountain</h1>
+    <p id="summary">Loading mountain data…</p>
+    <p class="hint">Drag to explore · Scroll to zoom · Right-drag to rotate & tilt</p>
+  </header>
+  <aside class="card legend" aria-label="Map legend and layers">
+    <h2>On the mountain</h2>
+    <div class="key"><i class="swatch beginner"></i> Beginner <small>easy / novice</small></div>
+    <div class="key"><i class="swatch intermediate"></i> Intermediate</div>
+    <div class="key"><i class="swatch advanced"></i> Advanced / expert</div>
+    <div class="key"><i class="swatch unknown"></i> Unknown difficulty</div>
+    <div class="key"><i class="swatch lift"></i> Operating lifts</div>
+    <div class="layers">
+      <label><input id="boundary-toggle" type="checkbox" checked disabled> Resort boundary</label>
+      <label><input id="stations-toggle" type="checkbox" disabled> Lift stations</label>
+    </div>
+    <p id="mode">Preparing terrain…</p>
+    <a id="flat-link" href="?view=2d">Open 2D fallback</a>
+  </aside>
+  <div id="notice" role="status" hidden></div>
+  <noscript>This map requires JavaScript and a WebGL-capable browser.</noscript>
+</body>
+</html>
