@@ -1,3 +1,29 @@
+# Large source downloads; keep the processed GeoJSON tracked for teammates.
+/data/raw/
+
+# Regenerable routing audits and query results.
+/outputs/
+
+# Local Python environments and caches.
 .venv/
+venv/
+env/
 __pycache__/
 *.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Local secrets (allow a shareable example configuration).
+.env
+.env.*
+!.env.example
+
+# macOS metadata and editor temporary files.
+.DS_Store
+*.swp
+*.swo
+*~

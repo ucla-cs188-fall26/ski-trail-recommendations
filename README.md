@@ -2,7 +2,8 @@
 
 Interactive trail and lift maps for Mammoth Mountain, California. The current
 prototype visualizes the resort in 3D using MapLibre GL JS, with a separate
-Python/Folium map. Route finding and navigation graphs are not implemented yet.
+Python/Folium map. A directed NetworkX/Dijkstra routing backend is also available;
+map integration is pending, and source-data connectivity gaps are reported explicitly.
 
 ## Quick start: view the map
 
@@ -122,3 +123,20 @@ On Windows, create the environment with `py -m venv .venv` and replace
 MapLibre reads the processed GeoJSON directly; it has no generation or build
 step. Camera settings, terrain providers, attribution, and implementation
 details are documented in [maplibre/README.md](maplibre/README.md).
+
+## Routing backend
+
+See [routing/README.md](routing/README.md) for setup, coordinate queries, difficulty
+filters, route GeoJSON, and graph validation. The backend uses downhill trail
+edges and uphill lift rides, with lifts weighted at four times their length.
+It reads the existing processed GeoJSON without changing the data or map viewers.
+
+```bash
+.venv/bin/python -m pip install -r routing/requirements.txt
+.venv/bin/python -m pytest tests/test_routing.py -q
+.venv/bin/python -m routing audit --output outputs/mammoth_routing_audit.json
+```
+
+The conservative graph reports missing station/trail connections and locally
+uphill trail segments. Many routes remain unreachable until those data gaps
+are reviewed; see the routing documentation before integrating with the map.
