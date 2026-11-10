@@ -31,6 +31,32 @@
     <p id="mode">Preparing terrain…</p>
     <a id="flat-link" href="?view=2d">Open 2D fallback</a>
   </aside>
+  <details class="card directions" id="directions" open hidden>
+    <summary>Directions</summary>
+    <div class="field">
+      <label for="from-input">From</label>
+      <input id="from-input" type="search" placeholder="Search a lift or trail" autocomplete="off">
+      <ul class="suggestions" id="from-list" hidden></ul>
+    </div>
+    <div class="field">
+      <label for="to-input">To</label>
+      <input id="to-input" type="search" placeholder="Search a lift or trail" autocomplete="off">
+      <ul class="suggestions" id="to-list" hidden></ul>
+    </div>
+    <p class="hint">A trail starts at its top and ends at its bottom; a lift starts at the bottom station. You can also click a trail or lift on the map.</p>
+    <fieldset class="allow">
+      <legend>Trails allowed</legend>
+      <label><input id="allow-green" type="checkbox" checked> Green</label>
+      <label><input id="allow-blue" type="checkbox" checked> Blue</label>
+      <label><input id="allow-black" type="checkbox" checked> Black</label>
+      <label><input id="allow-unknown" type="checkbox"> Unrated</label>
+    </fieldset>
+    <div class="actions">
+      <button id="route-go" type="button" disabled>Get route</button>
+      <button id="route-clear" type="button">Clear</button>
+    </div>
+    <p id="route-result" role="status"></p>
+  </details>
   <div id="notice" role="status" hidden></div>
   <noscript>This map requires JavaScript and a WebGL-capable browser.</noscript>
 </body>

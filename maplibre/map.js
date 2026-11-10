@@ -1,4 +1,7 @@
-/* A static viewer. GeoJSON coordinates are passed directly to MapLibre. */
+/* Map viewer. GeoJSON coordinates are passed directly to MapLibre.
+   Served by the backend (uvicorn backend.main:app) it loads data from the API and
+   enables directions. Served by a plain file server it reads the static GeoJSON
+   files and directions stay hidden. */
 "use strict";
 
 // Looking southwest from the northeast side: an approximate ski-map perspective.
@@ -6,6 +9,7 @@
 const INITIAL_CAMERA = {center: [-119.025, 37.639], zoom: 13.1, bearing: 210, pitch: 55};
 const params = new URLSearchParams(location.search);
 const flat = params.get("view") === "2d";
+const API = `/v1/resorts/${encodeURIComponent(params.get("resort") || "mammoth")}`;
 function cameraValue(key, low, high) {
   const value = params.has(key) ? Number(params.get(key)) : INITIAL_CAMERA[key];
   return Number.isFinite(value) ? Math.max(low, Math.min(high, value)) : INITIAL_CAMERA[key];
@@ -19,9 +23,16 @@ function notify(message) {
 async function start() {
   if (location.protocol === "file:") throw new Error("Start the local server described in maplibre/README.md, then open http://localhost:8000/maplibre/.");
   if (!window.maplibregl) throw new Error("MapLibre could not load. Check your internet connection and reload.");
+  // The backend answers with resort metadata; a plain file server does not.
+  let resort = null;
+  try {
+    const response = await fetch(API);
+    if (response.ok && (response.headers.get("content-type") || "").includes("json")) resort = await response.json();
+  } catch (error) { /* static mode */ }
+  if (resort && resort.camera) Object.assign(INITIAL_CAMERA, resort.camera);
   const kinds = ["runs", "lifts", "spots", "ski_area"];
   const entries = await Promise.all(kinds.map(async kind => {
-    const response = await fetch(`../data/processed/mammoth_${kind}.geojson`);
+    const response = await fetch(resort ? `${API}/features/${kind}` : `../data/processed/mammoth_${kind}.geojson`);
     if (!response.ok) throw new Error(`Cannot load ${kind}: HTTP ${response.status}`);
     const data = await response.json();
     if (data.type !== "FeatureCollection") throw new Error(`Invalid ${kind} FeatureCollection`);
@@ -67,7 +78,7 @@ async function start() {
     zoom: cameraValue("zoom", 11, 18), bearing: cameraValue("bearing", -360, 360),
     pitch: flat ? 0 : cameraValue("pitch", 0, 70),
     minZoom: 11, maxZoom: 18, maxPitch: 70,
-    maxBounds: [[-119.12, 37.58], [-118.92, 37.71]],
+    maxBounds: (resort && resort.bounds) || [[-119.12, 37.58], [-118.92, 37.71]],
     renderWorldCopies: false
   });
   let terrainFailed = false;
@@ -109,6 +120,13 @@ async function start() {
       filter: ["==", ["get", "spotType"], "lift_station"], layout: {visibility: "none"},
       paint: {"circle-radius": 4, "circle-color": "#de3535", "circle-stroke-color": "white", "circle-stroke-width": 1.5}});
 
+    map.addSource("route", {type: "geojson", data: {type: "FeatureCollection", features: []}});
+    map.addLayer({id: "route-halo", type: "line", source: "route", layout: round,
+      paint: {"line-color": "#ffffff", "line-width": 10, "line-opacity": 0.9}});
+    map.addLayer({id: "route", type: "line", source: "route", layout: round,
+      paint: {"line-color": "#f59e0b", "line-width": 6}});
+    const setEnd = resort ? setupDirections(map) : null;
+
     for (const [control, layer] of [["boundary-toggle", "boundary"], ["stations-toggle", "stations"]]) {
       const input = document.getElementById(control);
       input.disabled = false;
@@ -132,7 +150,23 @@ async function start() {
         ? `Difficulty: ${props.difficulty || "unknown"}`
         : `Type: ${props.liftType || props.spotType || "lift"}`;
       content.append(title, detail);
-      new maplibregl.Popup({maxWidth: "280px"}).setLngLat(event.lngLat).setDOMContent(content).addTo(map);
+      const popup = new maplibregl.Popup({maxWidth: "280px"}).setLngLat(event.lngLat).setDOMContent(content);
+      if (setEnd && props.id && ["runs", "lifts"].includes(feature.layer.id)) {
+        const actions = document.createElement("div");
+        actions.className = "popup-actions";
+        for (const [which, label] of [["from", "Directions from here"], ["to", "Directions to here"]]) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = label;
+          button.addEventListener("click", () => {
+            setEnd(which, {id: props.id, name: props.name || "Unnamed feature"});
+            popup.remove();
+          });
+          actions.append(button);
+        }
+        content.append(actions);
+      }
+      popup.addTo(map);
     });
     if (!terrainFailed) document.getElementById("mode").textContent = flat ? "2D · topographic view" : "3D terrain · 1.15× elevation";
   });
@@ -140,6 +174,98 @@ async function start() {
     document.getElementById("flat-link").href = "./";
     document.getElementById("flat-link").textContent = "Open 3D terrain";
   }
+}
+
+// Directions panel: pick a start and a destination by name (search) or from a
+// map popup, then ask the backend for a route. Returns the setter popups use.
+function setupDirections(map) {
+  const ends = {from: null, to: null};
+  const go = document.getElementById("route-go");
+  const output = document.getElementById("route-result");
+  const empty = {type: "FeatureCollection", features: []};
+  document.getElementById("directions").hidden = false;
+
+  function setEnd(which, feature) {
+    ends[which] = feature;
+    document.getElementById(`${which}-input`).value = feature ? feature.name : "";
+    document.getElementById(`${which}-list`).hidden = true;
+    go.disabled = !(ends.from && ends.to);
+  }
+  for (const which of ["from", "to"]) {
+    const input = document.getElementById(`${which}-input`);
+    const list = document.getElementById(`${which}-list`);
+    let timer = null, latest = 0;
+    input.addEventListener("input", () => {
+      ends[which] = null;  // typed text is not a selection until a result is chosen
+      go.disabled = true;
+      clearTimeout(timer);
+      const query = input.value.trim();
+      if (!query) { list.hidden = true; return; }
+      timer = setTimeout(async () => {
+        const ticket = ++latest;
+        const response = await fetch(`${API}/search?limit=6&q=${encodeURIComponent(query)}`);
+        if (!response.ok || ticket !== latest) return;
+        const hits = await response.json();
+        list.replaceChildren(...hits.map(hit => {
+          const item = document.createElement("li");
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = hit.kind === "lift" ? `${hit.name} · lift` : `${hit.name} · ${hit.difficulty || "unknown"}`;
+          button.addEventListener("click", () => setEnd(which, hit));
+          item.append(button);
+          return item;
+        }));
+        if (!hits.length) {
+          const none = document.createElement("li");
+          none.textContent = "No lift or trail with that name";
+          list.append(none);
+        }
+        list.hidden = false;
+      }, 200);
+    });
+  }
+  go.addEventListener("click", async () => {
+    output.textContent = "Finding a route…";
+    go.disabled = true;
+    try {
+      const allow = ["green", "blue", "black"].filter(group => document.getElementById(`allow-${group}`).checked);
+      const response = await fetch(`${API}/routes`, {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({start: {feature_id: ends.from.id}, destination: {feature_id: ends.to.id},
+          allow, include_unknown: document.getElementById("allow-unknown").checked})
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(typeof result.detail === "string" ? result.detail : "The route request was rejected.");
+      map.getSource("route").setData(result.geojson);
+      if (result.status !== "ok") {
+        output.textContent = result.status === "unreachable"
+          ? "No connected route between these with the allowed difficulties. The trail data still has gaps."
+          : result.message;
+        return;
+      }
+      const km = meters => (meters / 1000).toFixed(2);
+      const lifts = result.lifts_used.map(lift => lift.name || "Unnamed lift").join(", ");
+      output.textContent = `${km(result.total_trail_distance_m)} km skiing · ${km(result.total_lift_distance_m)} km on lifts`
+        + (lifts ? ` (${lifts})` : "");
+      const points = result.geojson.features.flatMap(feature => feature.geometry.coordinates);
+      if (points.length) {
+        const bounds = points.reduce((box, point) => box.extend(point.slice(0, 2)),
+          new maplibregl.LngLatBounds(points[0].slice(0, 2), points[0].slice(0, 2)));
+        map.fitBounds(bounds, {padding: 120, maxZoom: 16});
+      }
+    } catch (error) {
+      output.textContent = error.message;
+    } finally {
+      go.disabled = !(ends.from && ends.to);
+    }
+  });
+  document.getElementById("route-clear").addEventListener("click", () => {
+    setEnd("from", null);
+    setEnd("to", null);
+    output.textContent = "";
+    map.getSource("route").setData(empty);
+  });
+  return setEnd;
 }
 
 start().catch(error => {
