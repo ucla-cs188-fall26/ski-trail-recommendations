@@ -1,0 +1,16 @@
+.card {
+  display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 12px 14px;
+  border: 2px solid var(--ice); border-radius: var(--radius); background: #fff; cursor: pointer;
+  margin-bottom: 10px; transition: border-color 0.15s ease, background 0.15s ease;
+}
+.card:hover { border-color: var(--navy-2); }
+.selected { border-color: var(--navy); background: var(--glacier); }
+.icon { font-size: 1.4rem; width: 32px; text-align: center; flex-shrink: 0; }
+.text { display: flex; flex-direction: column; flex: 1; }
+.title { font-weight: 600; }
+.description { font-size: 0.9rem; color: var(--slate); }
+.check {
+  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--ice); flex-shrink: 0;
+  display: grid; place-items: center; font-weight: 700; color: #fff;
+}
+.selected .check { background: var(--navy); border-color: var(--navy); }

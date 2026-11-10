@@ -1,0 +1,20 @@
+.intro { color: var(--slate); margin-top: -4px; }
+.error { color: var(--danger); font-weight: 600; margin: 4px 0 12px; }
+.warn { padding: 10px 12px; border-radius: var(--radius-sm); background: #fff4e5; color: #7a3b00; font-weight: 600; margin: 8px 0; }
+.note { font-size: 0.875rem; color: var(--slate); margin-top: 8px; }
+.groupLabel { font-weight: 600; margin: 4px 0 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.clarifier { margin: 6px 0 4px 12px; padding-left: 12px; border-left: 3px solid var(--accent); }
+.ratingLabel { display: inline-flex; align-items: center; gap: 8px; }
+.sym { display: inline-block; width: 1.6em; text-align: center; }
+.green { color: var(--piste-green); }
+.blue { color: var(--piste-blue); }
+.black, .doubleBlack { color: var(--piste-black); }
+.twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.select {
+  width: 100%; min-height: var(--tap); padding: 8px 12px; border: 2px solid var(--ice); border-radius: var(--radius-sm);
+  background: #fff; color: var(--navy); font-size: 1rem; margin-bottom: 16px;
+}
+.selectLabel { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+.mountains { max-height: 240px; overflow-y: auto; padding-right: 4px; margin-bottom: 8px; }
+.selected { font-size: 0.9rem; color: var(--navy-2); margin: 0 0 12px; }

@@ -1,0 +1,8 @@
+.chip {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 56px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--ice);
+  background: #fff; color: var(--navy); font-weight: 600; cursor: pointer;
+}
+.mark { min-width: 1em; }
+.like { background: #e3f4ea; border-color: var(--piste-green); color: #0e5a2c; }
+.avoid { background: var(--danger-bg); border-color: var(--danger); color: #8a1219; text-decoration: line-through; }

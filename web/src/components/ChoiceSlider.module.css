@@ -1,0 +1,5 @@
+.wrap { margin: 8px 0 20px; }
+.label { display: block; font-weight: 600; margin-bottom: 4px; }
+.value { font-family: var(--font-head); font-size: 1.15rem; margin: 0 0 6px; color: var(--navy-2); }
+.range { width: 100%; height: var(--tap); accent-color: var(--accent); cursor: pointer; }
+.ends { display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--slate); }

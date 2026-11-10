@@ -1,0 +1,12 @@
+.card { display: flex; flex-direction: column; gap: 10px; }
+.section { background: #fff; border-radius: var(--radius); padding: 12px 14px; border: 1px solid var(--glacier); }
+.head { display: flex; align-items: center; justify-content: space-between; }
+.head h3 { font-size: 1rem; margin: 0; }
+.edit {
+  min-height: 40px; min-width: 56px; border: none; background: none; color: var(--navy-2);
+  font-weight: 700; text-decoration: underline; cursor: pointer; border-radius: 8px;
+}
+.section dl { margin: 6px 0 0; }
+.row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; font-size: 0.95rem; }
+.row dt { color: var(--slate); }
+.row dd { margin: 0; text-align: right; font-weight: 600; }

@@ -1,0 +1,29 @@
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; margin-bottom: 18px; color: var(--navy-2); }
+.brandMark { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--navy); color: #fff; }
+.lead { color: var(--slate); }
+.alert {
+  padding: 12px 14px; border-radius: var(--radius-sm); background: var(--danger-bg); color: #8a1219;
+  font-weight: 600; margin-bottom: 16px; border-left: 4px solid var(--danger);
+}
+.success {
+  padding: 12px 14px; border-radius: var(--radius-sm); background: #e3f4ea; color: #0e5a2c;
+  font-weight: 600; margin-bottom: 16px; border-left: 4px solid var(--success);
+}
+.alt { text-align: center; margin: 18px 0 0; }
+.row { display: flex; justify-content: flex-end; margin: -6px 0 14px; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.hero { color: #fff; text-align: center; }
+.piste { display: flex; justify-content: center; gap: 10px; margin: 6px 0 22px; }
+.piste span { width: 14px; height: 14px; display: inline-block; }
+.green { background: var(--piste-green); border-radius: 50%; }
+.blue { background: var(--piste-blue); }
+.black { background: var(--piste-black); transform: rotate(45deg) scale(0.85); }
+.linkButton {
+  display: flex; align-items: center; justify-content: center; min-height: var(--tap); border-radius: 999px;
+  font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; text-decoration: none; border: 2px solid transparent;
+}
+.linkPrimary { background: var(--accent); color: var(--accent-ink); }
+.linkSecondary { background: #fff; color: var(--navy); border-color: var(--navy); }
+.mail { list-style: none; padding: 0; margin: 0; }
+.mail li { padding: 12px 0; border-bottom: 1px solid var(--glacier); }
+.meta { font-size: 0.85rem; color: var(--slate); margin: 0; }
