@@ -1,0 +1,35 @@
+:root {
+  /* Snow palette */
+  --snow: #f7fafc;
+  --glacier: #dcebf5;
+  --ice: #b9d6ea;
+  --navy: #0b2545;
+  --navy-2: #13315c;
+  --slate: #4a5d73;
+  --accent: #ff7a1a;           /* goggle orange — primary CTAs */
+  --accent-ink: #1a0d00;
+  --accent-hover: #ff8f3d;
+  --danger: #c0262d;
+  --danger-bg: #fdecec;
+  --success: #178342;
+
+  /* Piste colors (shared with maplibre/map.css) */
+  --piste-green: #178342;
+  --piste-blue: #2169c4;
+  --piste-black: #202725;
+
+  --sky: linear-gradient(180deg, #0b2545 0%, #13315c 38%, #3e6e9e 72%, #dcebf5 100%);
+  --card-bg: rgba(255, 255, 255, 0.86);
+  --card-border: rgba(255, 255, 255, 0.7);
+  --shadow: 0 12px 40px rgba(11, 37, 69, 0.28);
+
+  --font-head: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --tap: 48px;                 /* minimum tap target (gloves) */
+  --gutter: 16px;
+  --focus: 0 0 0 3px #fff, 0 0 0 6px var(--accent);
+}

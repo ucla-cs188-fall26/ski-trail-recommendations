@@ -1,0 +1,6 @@
+.snow { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.flake {
+  position: absolute; top: -10px; border-radius: 50%; background: #fff; opacity: 0.85;
+  animation-name: fall; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes fall { to { transform: translate(var(--drift), 105vh); } }

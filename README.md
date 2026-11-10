@@ -124,6 +124,14 @@ MapLibre reads the processed GeoJSON directly; it has no generation or build
 step. Camera settings, terrain providers, attribution, and implementation
 details are documented in [maplibre/README.md](maplibre/README.md).
 
+## Web app (sign-in + onboarding)
+
+A Vite + React app for accounts, skier onboarding and profiles lives in [`web/`](web/README.md):
+
+```bash
+cd web && npm install && npm run dev
+```
+
 ## Routing backend
 
 See [routing/README.md](routing/README.md) for setup, coordinate queries, difficulty

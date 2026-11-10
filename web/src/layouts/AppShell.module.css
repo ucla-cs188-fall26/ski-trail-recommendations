@@ -1,0 +1,13 @@
+.shell { min-height: 100dvh; display: flex; flex-direction: column; background: var(--snow); }
+.content { flex: 1; padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: space-around;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: var(--navy); box-shadow: 0 -4px 20px rgba(11, 37, 69, 0.25);
+}
+.tab {
+  flex: 1; max-width: 160px; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #b9d6ea; text-decoration: none; font-size: 0.8rem; font-weight: 600; border-radius: 12px;
+}
+.icon { font-size: 1.35rem; line-height: 1.1; }
+.active { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.active .icon { filter: drop-shadow(0 0 6px rgba(255, 122, 26, 0.7)); }

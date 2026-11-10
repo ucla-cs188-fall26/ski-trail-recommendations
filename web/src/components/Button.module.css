@@ -1,0 +1,19 @@
+.button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: var(--tap); padding: 0 22px; border-radius: 999px; border: 2px solid transparent;
+  font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; cursor: pointer;
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+.button:active:not(:disabled) { transform: scale(0.98); }
+.button:disabled { opacity: 0.6; cursor: not-allowed; }
+.block { width: 100%; }
+.primary { background: var(--accent); color: var(--accent-ink); }
+.primary:hover:not(:disabled) { background: var(--accent-hover); }
+.secondary { background: #fff; color: var(--navy); border-color: var(--navy); }
+.ghost { background: transparent; color: inherit; border-color: currentColor; }
+.link { background: none; color: var(--navy-2); padding: 0 8px; text-decoration: underline; font-family: var(--font-body); font-size: 1rem; }
+.spinner {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 3px solid currentColor; border-right-color: transparent; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
