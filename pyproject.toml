@@ -1,0 +1,20 @@
+[project]
+name = "all-slopes"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "networkx==3.7",
+    "shapely==2.2.0",
+    "pyproj==3.8.0",
+    "fastapi",
+    "uvicorn[standard]",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0", "httpx"]
+
+[tool.setuptools]
+packages = ["routing", "backend"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

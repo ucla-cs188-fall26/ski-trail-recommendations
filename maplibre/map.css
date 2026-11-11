@@ -21,13 +21,33 @@ input { accent-color: #326b5a; }
 #mode { font-size: 10px; color: #64776e; margin: 8px 0 3px; }
 .legend a { font-size: 11px; }
 a { color: #275d50; font-size: 12px; }
-#notice { position: absolute; z-index: 3; top: 22px; right: 22px; max-width: 310px; padding: 14px; background: #fff1ce; border-radius: 10px; font-size: 13px; }
+#notice { position: absolute; z-index: 3; bottom: 36px; right: 22px; max-width: 310px; padding: 14px; background: #fff1ce; border-radius: 10px; font-size: 13px; }
 .maplibregl-popup-content { border-radius: 10px; padding: 14px 22px 14px 16px; font-family: inherit; }
 .maplibregl-popup-content h3 { margin: 0 0 5px; font-size: 15px; }
 .maplibregl-popup-content p { margin: 0; font-size: 12px; }
+.directions { top: 16px; right: 16px; width: 250px; padding: 12px 14px; }
+.directions[hidden] { display: none; }
+.directions summary { font-size: 12px; font-weight: 700; cursor: pointer; }
+.directions[open] summary { margin-bottom: 8px; }
+.field { position: relative; margin-bottom: 6px; }
+.field input { width: 100%; box-sizing: border-box; padding: 6px 8px; font: inherit; font-size: 12px; border: 1px solid #c9d6cf; border-radius: 8px; }
+.suggestions { position: absolute; z-index: 4; left: 0; right: 0; margin: 2px 0 0; padding: 4px; list-style: none; background: #fff; border: 1px solid #c9d6cf; border-radius: 8px; box-shadow: 0 6px 18px #173b3425; font-size: 12px; }
+.suggestions li { padding: 2px 4px; color: #65766d; }
+.suggestions button { width: 100%; padding: 5px 6px; text-align: left; font: inherit; background: none; border: 0; border-radius: 6px; cursor: pointer; }
+.suggestions button:hover, .suggestions button:focus { background: #e9f1ed; }
+.allow { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 8px 0; padding: 0; border: 0; }
+.allow legend { font-size: 10px; color: #65766d; padding: 0; }
+.actions { display: flex; gap: 6px; }
+.actions button, .popup-actions button { padding: 6px 10px; font: inherit; font-size: 12px; border: 1px solid #326b5a; border-radius: 8px; background: #fff; color: #275d50; cursor: pointer; }
+#route-go { background: #326b5a; color: #fff; }
+#route-go:disabled { opacity: 0.45; cursor: default; }
+#route-result { margin: 8px 0 0; font-size: 12px; }
+#route-result:empty { display: none; }
+.popup-actions { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
 @media (max-width: 600px) {
+  .directions { top: 118px; left: 12px; right: 12px; width: auto; padding: 10px 12px; }
   .title-card { top: 12px; left: 12px; max-width: calc(100% - 50px); padding: 10px 12px; }
   h1 { font-size: 19px; } .hint { max-width: 260px; }
   .legend { left: 12px; bottom: 40px; padding: 10px 12px; min-width: 170px; }
-  .key { margin: 5px 0; } #notice { top: 150px; left: 12px; right: 12px; }
+  .key { margin: 5px 0; } #notice { top: 150px; bottom: auto; left: 12px; right: 12px; }
 }

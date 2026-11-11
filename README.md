@@ -2,8 +2,19 @@
 
 Interactive trail and lift maps for Mammoth Mountain, California. The current
 prototype visualizes the resort in 3D using MapLibre GL JS, with a separate
-Python/Folium map. A directed NetworkX/Dijkstra routing backend is also available;
-map integration is pending, and source-data connectivity gaps are reported explicitly.
+Python/Folium map. A directed NetworkX/Dijkstra routing package is exposed through
+a small FastAPI backend, and the MapLibre map can request directions from it.
+Source-data connectivity gaps are reported explicitly and still limit routing.
+
+There are two ways to run the map:
+
+| Mode | Command | Map URL | Directions |
+| --- | --- | --- | --- |
+| Static (no installs) | `python3 -m http.server 8000 --bind 127.0.0.1` | http://localhost:8000/maplibre/ | No |
+| Backend API | `.venv/bin/python -m uvicorn backend.main:app --reload` | http://localhost:8000/ | Yes |
+
+The static mode below works exactly as before. See
+[Backend API and directions](#backend-api-and-directions) for the second mode.
 
 ## Quick start: view the map
 
@@ -131,6 +142,101 @@ A Vite + React app for accounts, skier onboarding and profiles lives in [`web/`]
 ```bash
 cd web && npm install && npm run dev
 ```
+
+## Backend API and directions
+
+The backend (`backend/`) loads each resort listed in `data/resorts/*.json` once at
+startup, keeps its routing graph in memory, and serves the map, the map data and
+routes from one address. It does not modify `routing/` or the processed GeoJSON.
+
+### Set up and run
+
+Python 3.11 or newer is required. From the repository root:
+
+```bash
+python3 -m venv .venv  # skip if it already exists
+.venv/bin/python -m pip install -e ".[dev]"
+.venv/bin/python -m uvicorn backend.main:app --reload
+```
+
+On Windows use `py -m venv .venv` and `.venv\Scripts\python.exe`. Startup takes
+a couple of seconds while the graph is built. Then open:
+
+| What | URL |
+| --- | --- |
+| Map with directions | http://localhost:8000/ |
+| Interactive API docs (try requests in the browser) | http://localhost:8000/docs |
+| Health check | http://localhost:8000/healthz |
+
+Stop the static `http.server` first if it is using port 8000, or add `--port 8001`.
+The Folium map is not served by the backend; use the static server for it.
+
+### Getting directions on the map
+
+In the **Directions** panel (top right), type a lift or trail name in **From** and
+**To**, pick a result, and press **Get route**. You can also click a trail or
+lift on the map and choose *Directions from here* or *Directions to here*.
+The route is drawn in orange with its skiing and lift distances.
+
+- A trail used as a start means its top; as a destination, its bottom. A lift
+  starts at its bottom station and ends at its top station.
+- Untick Green, Blue or Black to keep the route off those trails. Unrated
+  trails are excluded unless **Unrated** is ticked.
+- Many pairs currently report no connected route. That is the data, not a bug:
+  the graph has 69 disconnected pieces and 37 lift terminals with no trail
+  attached. See *Connectivity review* in [routing/README.md](routing/README.md).
+
+### Endpoints
+
+| Method and path | Returns |
+| --- | --- |
+| `GET /v1/resorts` | Resort list: id, name, camera, bounds |
+| `GET /v1/resorts/{id}` | One resort plus feature counts and graph size |
+| `GET /v1/resorts/{id}/features/{kind}` | GeoJSON for `runs`, `lifts`, `spots` or `ski_area` |
+| `GET /v1/resorts/{id}/search?q=chair` | Lifts and trails matching a name |
+| `POST /v1/resorts/{id}/routes` | Route summary and route GeoJSON |
+| `GET /v1/resorts/{id}/audit` | Full graph audit (same as `python -m routing audit`) |
+
+The only resort id today is `mammoth`. Example route request, from the command line:
+
+```bash
+curl -s -X POST http://localhost:8000/v1/resorts/mammoth/routes \
+  -H "Content-Type: application/json" \
+  -d '{"start": {"coordinate": [-119.037769, 37.6406848]},
+       "destination": {"coordinate": [-119.039052, 37.6338582]},
+       "allow": ["green"]}'
+```
+
+`start` and `destination` each take either `coordinate` (`[longitude, latitude]`,
+snapped within `max_snap_m`, default 10, maximum 20) or `feature_id` (an `id` from
+`/search` or from the GeoJSON). The response `status` is `ok`, `unreachable` or
+`snap_failed`; all three return HTTP 200 and a `message`. Invalid input returns 422.
+Feature GeoJSON from the API omits the repeated `skiAreas`, `places` and `sources`
+properties, which cuts the runs payload from 612 KB to 240 KB.
+
+### Where things live
+
+| Path | Purpose |
+| --- | --- |
+| `backend/main.py` | App, startup loading, all endpoints, serves `maplibre/` at `/` |
+| `backend/resorts.py` | Reads resort manifests and builds each routing graph |
+| `backend/schemas.py` | Request validation for routes |
+| `data/resorts/mammoth.json` | Resort manifest: data files, camera, bounds, optional connectors file |
+| `tests/test_api.py` | API tests |
+| `pyproject.toml` | Dependencies for routing and the backend |
+
+### Working on it
+
+- Run all tests with `.venv/bin/python -m pytest -q` (27 routing tests, 3 API tests).
+- `--reload` restarts the server when Python files change. Edits to `maplibre/`
+  only need a browser refresh.
+- To add reviewed connectors, create `data/resorts/mammoth.connectors.json` in the
+  format described in [routing/README.md](routing/README.md) and set
+  `"connectors": "mammoth.connectors.json"` in the manifest, then restart.
+- `routing/` still assumes UTM zone 11N and Mammoth filenames. A second resort
+  needs the projection made per-resort first.
+- `fastapi`, `uvicorn` and `httpx` are not version-pinned yet; pin them once the
+  team agrees on versions.
 
 ## Routing backend
 

@@ -31,3 +31,7 @@ htmlcov/
 # Web app
 node_modules/
 web/dist/
+
+# Local graphify analysis output and Python packaging metadata.
+/graphify-out/
+*.egg-info/

@@ -1,0 +1,13 @@
+{
+  "id": "mammoth",
+  "name": "Mammoth Mountain",
+  "files": {
+    "runs": "../processed/mammoth_runs.geojson",
+    "lifts": "../processed/mammoth_lifts.geojson",
+    "spots": "../processed/mammoth_spots.geojson",
+    "ski_area": "../processed/mammoth_ski_area.geojson"
+  },
+  "connectors": null,
+  "camera": {"center": [-119.025, 37.639], "zoom": 13.1, "bearing": 210, "pitch": 55},
+  "bounds": [[-119.12, 37.58], [-118.92, 37.71]]
+}

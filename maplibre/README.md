@@ -1,7 +1,17 @@
 # Mammoth MapLibre viewer
 
-Separate static HTML/CSS/JavaScript visualization. No build step, API key, or new
-Python dependencies. The Folium implementation and processed GeoJSON are unchanged.
+Separate static HTML/CSS/JavaScript visualization. No build step or API key.
+The Folium implementation and processed GeoJSON are unchanged.
+
+The viewer runs in two modes and detects which one it is in:
+
+- **Static** (below): served by `python3 -m http.server`, it reads the processed
+  GeoJSON files. No Python packages are needed and the Directions panel is hidden.
+- **Backend**: served by `uvicorn backend.main:app` at http://localhost:8000/, it
+  loads data, camera and bounds from the API and shows the Directions panel.
+  See the root README. On load `map.js` requests `/v1/resorts/mammoth`; a JSON
+  answer selects backend mode, anything else selects static mode. `?resort=<id>`
+  chooses another resort id once more exist.
 
 ## Run locally
 
