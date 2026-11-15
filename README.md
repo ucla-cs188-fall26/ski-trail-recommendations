@@ -143,6 +143,21 @@ A Vite + React app for accounts, skier onboarding and profiles lives in [`web/`]
 cd web && npm install && npm run dev
 ```
 
+The **Map & route** tab, the meeting-point search, and the "Trail map ready" badges
+read from the backend below. In dev, Vite proxies `/v1` and `/healthz` to
+`http://127.0.0.1:8000`, so run both servers in two terminals:
+
+```bash
+.venv/bin/python -m uvicorn backend.main:app --reload   # repo root, port 8000
+cd web && npm run dev                                    # http://localhost:5173
+```
+
+Without the backend, sign-in, onboarding and profile still work, and the map page
+explains how to start the server. To use a backend hosted somewhere else, set
+`VITE_API_BASE` (that backend then needs CORS enabled). The route's allowed
+difficulties start from the profile's comfort ratings. The router has no separate
+double black yet, so "Black" also includes double blacks.
+
 ## Backend API and directions
 
 The backend (`backend/`) loads each resort listed in `data/resorts/*.json` once at

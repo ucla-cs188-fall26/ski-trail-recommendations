@@ -29,6 +29,14 @@ export const MOUNTAINS: readonly Mountain[] = [
   { id: 'whistler', name: 'Whistler Blackcomb', region: 'British Columbia', hasTrailData: false, center: [-122.9486, 50.1163] },
 ];
 
+/**
+ * Whether a mountain can be opened. Uses the backend's resort list when it loaded
+ * (useLiveResortIds), otherwise the static flag above.
+ */
+export function hasTrailData(m: Mountain, liveIds: ReadonlySet<string> | null): boolean {
+  return liveIds ? liveIds.has(m.id) : m.hasTrailData;
+}
+
 export function getMountain(id: string): Mountain | undefined {
   return MOUNTAINS.find((m) => m.id === id);
 }

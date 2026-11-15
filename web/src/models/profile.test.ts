@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   RATINGS, TERRAIN_TYPES, createDefaultProfile, deriveTerrainComfort, computeAbilityScore,
-  needsClarifier, difficultyToRating, allowedRatings, validateProfile, createDaySession,
+  needsClarifier, difficultyToRating, allowedRatings, toRouteAllow, blackIncludesDoubleBlackWarning, validateProfile, createDaySession,
   effectivePreferences, localDateKey, type ComfortLevel, type SkierProfile,
 } from './profile';
 
@@ -217,5 +217,22 @@ describe('day sessions', () => {
     expect(effectivePreferences(p, tired).challenge).toBe(2);
     const veryLow = { ...tired, challengeToday: 1 };
     expect(effectivePreferences(p, veryLow).challenge).toBe(1);
+  });
+});
+
+describe('toRouteAllow', () => {
+  it('drops avoided ratings and folds double black into black', () => {
+    expect(toRouteAllow({ green: 'love', blue: 'cautious', black: 'avoid', doubleBlack: 'avoid' })).toEqual(['green', 'blue']);
+    expect(toRouteAllow({ green: 'avoid', blue: 'comfortable', black: 'cautious', doubleBlack: 'love' })).toEqual(['blue', 'black']);
+  });
+
+  it('never allows black just because double black is allowed', () => {
+    expect(toRouteAllow({ green: 'love', blue: 'love', black: 'avoid', doubleBlack: 'love' })).toEqual(['green', 'blue']);
+  });
+
+  it('warns when black would also admit avoided double blacks', () => {
+    expect(blackIncludesDoubleBlackWarning({ green: 'love', blue: 'love', black: 'cautious', doubleBlack: 'avoid' })).toBe(true);
+    expect(blackIncludesDoubleBlackWarning({ green: 'love', blue: 'love', black: 'avoid', doubleBlack: 'avoid' })).toBe(false);
+    expect(blackIncludesDoubleBlackWarning({ green: 'love', blue: 'love', black: 'love', doubleBlack: 'cautious' })).toBe(false);
   });
 });

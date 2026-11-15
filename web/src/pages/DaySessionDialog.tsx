@@ -4,7 +4,7 @@ import { Button } from '../components/Button';
 import { ChoiceSlider } from '../components/ChoiceSlider';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { OptionCard } from '../components/OptionCard';
-import { TextField } from '../components/TextField';
+import { FeaturePicker } from '../components/FeaturePicker';
 import { TERRAIN_TYPES, type DaySession, type Energy } from '../models/profile';
 import { CHALLENGE_ENDS, CHALLENGE_TEXT, TERRAIN_LABELS } from '../onboarding/questions';
 
@@ -21,6 +21,7 @@ export function DaySessionDialog({ initial, onSave, onClose }: {
 }) {
   const [s, setS] = useState<DaySession>(initial);
   const [meeting, setMeeting] = useState(initial.meetingPoint?.name ?? '');
+  const [meetingId, setMeetingId] = useState<string | undefined>(initial.meetingPoint?.featureId);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +29,10 @@ export function DaySessionDialog({ initial, onSave, onClose }: {
     setBusy(true);
     const name = meeting.trim();
     const { meetingPoint: _old, ...rest } = s;
-    const next: DaySession = name ? { ...rest, meetingPoint: { ...(s.meetingPoint ?? {}), name } } : rest;
+    const { featureId: _id, ...oldPoint } = s.meetingPoint ?? { name };
+    const next: DaySession = name
+      ? { ...rest, meetingPoint: { ...oldPoint, name, ...(meetingId ? { featureId: meetingId } : {}) } }
+      : rest;
     const err = await onSave(next);
     setBusy(false);
     setError(err);
@@ -61,8 +65,9 @@ export function DaySessionDialog({ initial, onSave, onClose }: {
           );
         })}
       </div>
-      <TextField label="Meeting point (optional)" value={meeting} onChange={setMeeting}
-        hint="Where you're meeting your group, e.g. “Main Lodge at noon”." />
+      <FeaturePicker resortId={s.mountainId} label="Meeting point (optional)" value={meeting} onChange={setMeeting}
+        onPick={(hit) => setMeetingId(hit?.id)}
+        hint="Where you're meeting your group. Pick a lift or trail to get directions there, or just type, e.g. “Main Lodge at noon”." />
     </Modal>
   );
 }

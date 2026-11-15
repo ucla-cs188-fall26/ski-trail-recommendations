@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { useAuth } from '../context/AuthContext';
-import { getMountain } from '../data/mountains';
+import { getMountain, hasTrailData } from '../data/mountains';
+import { useLiveResortIds } from '../services/api';
 import {
   allowedRatings, createDaySession, effectivePreferences, localDateKey, type DaySession, type SkierProfile,
 } from '../models/profile';
@@ -20,9 +21,11 @@ export function MountainHome() {
   const [loaded, setLoaded] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const date = localDateKey(new Date());
+  const liveIds = useLiveResortIds();
+  const live = !!mountain && hasTrailData(mountain, liveIds);
 
   useEffect(() => {
-    if (!mountain?.hasTrailData) return;
+    if (!mountain || !live) return;
     let cancelled = false;
     setLoaded(false);
     getDaySession(mountain.id, date).then((s) => {
@@ -32,7 +35,7 @@ export function MountainHome() {
       setDialogOpen(!s);
     });
     return () => { cancelled = true; };
-  }, [mountain, date, getDaySession]);
+  }, [mountain, live, date, getDaySession]);
 
   if (!mountain) return <NotFoundMountain />;
 
@@ -43,7 +46,7 @@ export function MountainHome() {
     </header>
   );
 
-  if (!mountain.hasTrailData) {
+  if (!live) {
     return (
       <>
         {hero}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MOUNTAINS, getMountain, searchMountains } from './mountains';
+import { MOUNTAINS, getMountain, hasTrailData, searchMountains } from './mountains';
 
 describe('mountain catalog', () => {
   it('includes Mammoth with trail data', () => {
@@ -39,5 +39,16 @@ describe('mountain catalog', () => {
     const firstStartsWith = r.findIndex((m) => m.name.toLowerCase().startsWith('mo'));
     const firstContains = r.findIndex((m) => !m.name.toLowerCase().startsWith('mo'));
     if (firstStartsWith !== -1 && firstContains !== -1) expect(firstStartsWith).toBeLessThan(firstContains);
+  });
+});
+
+describe('hasTrailData', () => {
+  it('prefers the backend resort list and falls back to the static flag', () => {
+    const mammoth = getMountain('mammoth')!;
+    const vail = getMountain('vail')!;
+    expect(hasTrailData(mammoth, null)).toBe(true);
+    expect(hasTrailData(vail, null)).toBe(false);
+    expect(hasTrailData(vail, new Set(['vail']))).toBe(true);
+    expect(hasTrailData(mammoth, new Set(['vail']))).toBe(false);
   });
 });

@@ -2,20 +2,21 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextField } from '../components/TextField';
 import { useAuth } from '../context/AuthContext';
-import { getMountain, searchMountains, type Mountain } from '../data/mountains';
+import { getMountain, hasTrailData, searchMountains, type Mountain } from '../data/mountains';
+import { useLiveResortIds } from '../services/api';
 import styles from '../layouts/Page.module.css';
 
 const MAX_RECENT = 5;
 
-function MountainButton({ m, onOpen }: { m: Mountain; onOpen: (m: Mountain) => void }) {
+function MountainButton({ m, live, onOpen }: { m: Mountain; live: boolean; onOpen: (m: Mountain) => void }) {
   return (
-    <button type="button" className={styles.mountain} disabled={!m.hasTrailData} onClick={() => onOpen(m)}>
+    <button type="button" className={styles.mountain} disabled={!live} onClick={() => onOpen(m)}>
       <span>
         <span className={styles.mName}>{m.name}</span>
         <span className={styles.mRegion}>{m.region}</span>
       </span>
-      <span className={`${styles.badge} ${m.hasTrailData ? styles.badgeLive : ''}`}>
-        {m.hasTrailData ? 'Trail map ready' : 'Coming soon'}
+      <span className={`${styles.badge} ${live ? styles.badgeLive : ''}`}>
+        {live ? 'Trail map ready' : 'Coming soon'}
       </span>
     </button>
   );
@@ -26,6 +27,7 @@ export function FindMountain() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const results = useMemo(() => searchMountains(query), [query]);
+  const liveIds = useLiveResortIds();
 
   const mine = useMemo(() => {
     const ids = [profile?.homeMountainId, ...(profile?.recentMountainIds ?? [])].filter((x): x is string => !!x);
@@ -52,7 +54,7 @@ export function FindMountain() {
             <section aria-label="Your mountains">
               <h2>Your mountains</h2>
               <div className={styles.list}>
-                {mine.map((m) => <MountainButton key={m.id} m={m} onOpen={openMountain} />)}
+                {mine.map((m) => <MountainButton key={m.id} m={m} live={hasTrailData(m, liveIds)} onOpen={openMountain} />)}
               </div>
             </section>
           )}
@@ -62,7 +64,7 @@ export function FindMountain() {
               <p className={styles.muted}>No mountains match “{query.trim()}”.</p>
             ) : (
               <div className={styles.list}>
-                {results.map((m) => <MountainButton key={m.id} m={m} onOpen={openMountain} />)}
+                {results.map((m) => <MountainButton key={m.id} m={m} live={hasTrailData(m, liveIds)} onOpen={openMountain} />)}
               </div>
             )}
           </section>
