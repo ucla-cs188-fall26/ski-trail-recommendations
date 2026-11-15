@@ -70,6 +70,8 @@ export interface SkierProfile {
 
 export interface MeetingPoint {
   name: string;
+  /** Lift or trail id from the backend search, when the user picked one. Used as a route destination. */
+  featureId?: string;
   coordinate?: [number, number];
   time?: string;
 }
@@ -185,6 +187,27 @@ export function difficultyToRating(difficulty: string | null | undefined): Ratin
 
 export function allowedRatings(comfort: TerrainComfort): Rating[] {
   return RATINGS.filter((r) => comfort[r] !== 'avoid');
+}
+
+export type RouteDifficulty = 'green' | 'blue' | 'black';
+
+/**
+ * Profile comfort → the backend router's `allow` list. The router merges advanced and
+ * expert runs into one "black" group, so double blacks can't be allowed separately:
+ * black is allowed only when the skier doesn't avoid blacks, and then it also admits
+ * double blacks (see blackIncludesDoubleBlackWarning).
+ */
+export function toRouteAllow(comfort: TerrainComfort): RouteDifficulty[] {
+  const out: RouteDifficulty[] = [];
+  if (comfort.green !== 'avoid') out.push('green');
+  if (comfort.blue !== 'avoid') out.push('blue');
+  if (comfort.black !== 'avoid') out.push('black');
+  return out;
+}
+
+/** True when allowing "black" in a route would also admit double blacks the skier avoids. */
+export function blackIncludesDoubleBlackWarning(comfort: TerrainComfort): boolean {
+  return comfort.black !== 'avoid' && comfort.doubleBlack === 'avoid';
 }
 
 // ---------- Validation ----------

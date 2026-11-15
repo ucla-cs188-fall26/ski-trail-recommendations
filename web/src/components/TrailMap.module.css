@@ -1,0 +1,9 @@
+.map { width: 100%; height: min(62vh, 520px); border-radius: var(--radius); overflow: hidden; background: #e9eee7; }
+.status { margin: 8px 0 0; color: var(--slate); font-size: 0.9rem; }
+.popupTitle { font-weight: 700; margin: 0 0 2px; color: var(--navy); }
+.popupDetail { margin: 0 0 8px; color: var(--slate); font-size: 0.85rem; }
+.popupActions { display: flex; flex-direction: column; gap: 6px; }
+.popupActions button {
+  min-height: 40px; padding: 0 12px; border-radius: 99px; border: 2px solid var(--navy-2); background: #fff;
+  color: var(--navy); font-weight: 600; cursor: pointer;
+}

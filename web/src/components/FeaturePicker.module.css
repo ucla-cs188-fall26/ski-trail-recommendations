@@ -1,0 +1,12 @@
+.wrap { position: relative; }
+.list {
+  list-style: none; margin: -10px 0 16px; padding: 4px; border: 2px solid var(--ice); border-radius: var(--radius-sm);
+  background: #fff; box-shadow: 0 6px 20px rgba(11, 37, 69, 0.12);
+}
+.item {
+  display: flex; justify-content: space-between; gap: 8px; width: 100%; min-height: 44px; padding: 8px 10px;
+  border: none; border-radius: 8px; background: none; color: var(--navy); font-size: 1rem; text-align: left; cursor: pointer;
+}
+.item:hover, .item:focus-visible { background: var(--glacier); }
+.meta { color: var(--slate); font-size: 0.85rem; white-space: nowrap; }
+.empty { padding: 8px 10px; color: var(--slate); }

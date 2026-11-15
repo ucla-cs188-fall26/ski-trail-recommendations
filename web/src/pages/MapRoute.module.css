@@ -1,0 +1,9 @@
+.mapPanel { padding: 8px; }
+.allow { border: none; padding: 0; margin: 0 0 12px; }
+.allow legend { font-weight: 600; margin-bottom: 6px; padding: 0; }
+.checks { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.checks label { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; font-weight: 600; }
+.checks input { width: 20px; height: 20px; }
+.result { margin: 12px 0 0; font-weight: 600; }
+.warn { color: var(--slate); font-size: 0.9rem; margin: 0 0 8px; }
+.error { color: var(--danger); font-weight: 600; }
